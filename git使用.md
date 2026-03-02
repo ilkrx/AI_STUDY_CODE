@@ -45,3 +45,9 @@ git push (-u) origin master    将代码推送到远程库(第一次推送要加
 
 ```
 
+### 2.2 git配置代理
+
+```
+git config --global https.proxy http://127.0.0.1:7890 设置HTTPS代理（端口号为7890）
+```
+
