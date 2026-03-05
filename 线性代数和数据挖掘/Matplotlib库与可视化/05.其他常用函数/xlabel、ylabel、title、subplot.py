@@ -18,5 +18,5 @@ plt.xlabel('x')
 plt.ylabel('y_cos')
 # 调用 tight_layout  用于自动调整子图（subplot）之间的间距，以避免子图内容被遮挡。它主要解决了当你有多个子图时，子图之间可能会重叠的问题。
 plt.tight_layout()
- # 显示图形
+# 显示图形
 plt.show()
