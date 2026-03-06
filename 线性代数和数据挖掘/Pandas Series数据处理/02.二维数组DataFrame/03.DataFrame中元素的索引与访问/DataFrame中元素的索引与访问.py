@@ -22,11 +22,13 @@ print(df['年龄'][1])
 print(df.loc[0,'姓名'])
 # 切片
 print(df.loc[0:2,'姓名':'年龄'])
+print('-'*30)
+print(df.loc[[0,2],['姓名','年龄']])
 print(df.iloc[0,0])
 print(df.iloc[0:1,0:1])
 
-# head  ->  返回前n行，默认5
-print(df.head(2))
-
-# tail  ->  返回后n行，默认5
-print(df.tail(1))
+# # head  ->  返回前n行，默认5
+# print(df.head(2))
+#
+# # tail  ->  返回后n行，默认5
+# print(df.tail(1))

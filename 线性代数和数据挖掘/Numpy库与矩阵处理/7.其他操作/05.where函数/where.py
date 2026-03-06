@@ -17,8 +17,6 @@ result = np.where(arr > 3, "大于 3", "小于等于 3")
 
 print(result)
 
-
-
 arr = np.array([1, 2, 3, 4, 5])
 
 # 将大于 3 的元素替换为 10，其他元素保持不变
