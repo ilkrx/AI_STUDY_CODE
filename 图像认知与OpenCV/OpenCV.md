@@ -719,3 +719,129 @@ cv2.imshow('image_thresh', image_thresh)
 cv2.imshow('image_dilate', image_dilate)
 cv2.waitKey(0)
 ```
+
+## 6.图像颜色识别
+
+![1773199894846](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773199894846.png)
+
+![1773199933872](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773199933872.png)
+
+![1773210143819](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773210143819.png)
+
+```
+# 对图片中的某些目标颜色进行识别
+
+# 导入opencv的库，方便后续直接调用函数
+import cv2
+import numpy as np
+
+# 1. 图片输入：准备一张原始图片
+image_np = cv2.imread('./color.png')
+
+# resize: 将图像的大小进行修改，方便我们观察现象
+image_np = cv2.resize(image_np, (700, 700))
+
+# 2. HSV空间转换：将RGB颜色空间下的图像转化为HSV颜色空间下的图像
+hsv_image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2HSV)
+
+# 3. 制作掩膜：为了方便后续遮挡其他不关心的区域，去制作一个掩膜
+
+# 创建hsv颜色区域的最小值数组  针对黄色区域
+lowerb = np.array([26, 43, 46])
+# 创建hsv颜色区域的最大值数组  针对黄色区域
+upperb = np.array([34, 255, 255])
+
+# 使用inRange函数，将hsv图像中的每一个值与lowerb和upperb进行比较
+# 当hsv图像中的像素点的hsv值处于数组范围之内，这个像素点就是我们要找的颜色
+
+# inRange函数的作用：生成一个与原始图像大小相同的单通道图，其值要么是255，要么是0
+# 第一个参数：原始图像
+# 第二个参数：寻找的范围的最小值  是个数组
+# 第三个参数：寻找的范围的最大值  是个数组
+mask_image_np = cv2.inRange(hsv_image_np, lowerb, upperb)
+
+# 4. 与运算：将原始图像和原始图像进行位与操作，并使用掩膜去遮盖掉不关心的部分
+color_image_np = cv2.bitwise_and(image_np, image_np, mask=mask_image_np)
+
+# 5. 图像输出：把结果显示出来
+cv2.imshow("mask_image_np", mask_image_np)
+cv2.imshow('color_image_np', color_image_np)
+cv2.waitKey(0)
+```
+
+## 7.图像颜色替换
+
+​	在颜色识别的基础上进行开操作，然后在开操作之后的掩膜中找到要替换的坐标位置，将位置上的值修改为替换的颜色的值。
+
+```
+# 导入OpenCV库，方便调用函数
+import cv2
+import numpy as np
+
+# 1. 图片输入，将图片读取进来
+image_np = cv2.imread('./color.png')
+cv2.imshow('image_np', image_np)
+
+# 2. 将图片转换为HSV模型下的图片
+image_hsv = cv2.cvtColor(image_np, cv2.COLOR_BGR2HSV)
+
+# 3. 制作掩膜
+color_lower = np.array([0, 43, 46])
+color_high = np.array([10, 255, 255])
+image_mask = cv2.inRange(image_hsv, color_lower, color_high)
+
+# 4. 开运算
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+image_mask_open = cv2.morphologyEx(image_mask, cv2.MORPH_OPEN, kernel)
+
+# 5. 图片颜色替换
+# for i in range(image_mask_open.shape[0]):
+#     for j in range(image_mask_open.shape[1]):
+#         if image_mask_open[i, j] == 255:
+#             image_np[i, j] = (255, 0, 0)
+image_np[image_mask_open == 255] = (255, 0, 0)
+
+# 6. 显示结果
+cv2.imshow('image_np1', image_np)
+cv2.imshow('image_mask_open', image_mask_open)
+cv2.waitKey(0)
+```
+
+## 8.ROI切割
+
+![1773236346783](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773236346783.png)
+
+```
+# 这个文件的作用是用来对图像中的某些区域进行切割的
+
+# 导入opencv库，方便读取和显示图像
+import cv2
+
+# 1. 读取我们要切割的图像
+image_np = cv2.imread('./lena.png')
+
+# 获取图像的高度和宽度，方便后续进行判断
+height, width = image_np.shape[0], image_np.shape[1]
+
+try:
+    # 2. 切割感兴趣的区域
+    # 人为指定我们要切割的区域
+    x_min, x_max = 270, 400
+    y_min, y_max = 270, 400
+
+    # 对要切割的区域的范围进行判断
+    if not (x_min >= 0 and x_max <= width and y_min >= 0 and y_max <= height):
+        raise OverflowError("x_min or x_max or y_min or y_max overflow!!")
+
+    # 使用cv2.rectangle去画一个矩形框，方便我们去调整感兴趣的区域的范围
+    cv2.rectangle(image_np, (x_min - 2, y_min - 2), (x_max + 2, y_max + 2), (0, 0, 255), 2)
+
+    # 3. 使用np数组的切片操作对图像进行切割
+    image_roi = image_np[y_min: y_max, x_min: x_max]
+    # 4. 显示结果
+    cv2.imshow('image_np', image_np)
+    cv2.imshow('image_roi', image_roi)
+    cv2.waitKey(0)
+except Exception as e:
+    print(e)
+```
