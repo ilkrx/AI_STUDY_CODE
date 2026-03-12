@@ -845,3 +845,186 @@ try:
 except Exception as e:
     print(e)
 ```
+
+## 9.图像旋转
+
+![1773279429130](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773279429130.png)
+
+### 9.1 单点旋转
+
+![1773279963176](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773279963176.png)
+
+![1773302907763](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773302907763.png)
+
+### 9.2 插值方法
+
+![1773313420178](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313420178.png)
+
+#### 9.2.1 最近邻插值
+
+![1773313488770](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313488770.png)
+
+![1773313527966](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313527966.png)
+
+#### 9.2.2 双线性插值
+
+![1773313611372](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313611372.png)
+
+![1773313642622](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313642622.png)
+
+![1773313666726](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313666726.png)
+
+![1773313687924](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313687924.png)
+
+### 9.3 边缘填充
+
+![1773313788846](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313788846.png)
+
+#### 9.3.1 边界复制
+
+![1773313826110](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313826110.png)
+
+#### 9.3.2 边界反射
+
+![1773313852045](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313852045.png)
+
+#### 9.3.3 边界反射101
+
+![1773313881812](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313881812.png)
+
+#### 9.3.4 边界常数
+
+![1773313901616](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313901616.png)
+
+#### 9.3.5 边界包裹
+
+![1773313922270](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773313922270.png)
+
+## 10.图像镜像旋转
+
+![1773314370159](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773314370159.png)
+
+```
+# 对图像进行翻转操作
+import cv2
+
+# 导入OpenCV的库，方便我们调用函数
+
+# 1. 读取图片
+image_np = cv2.imread('./lena.png')
+
+# 2. 使用flip函数去对图像进行镜像的翻转
+# cv2.flip： 对图像进行镜像翻转
+# 第一个参数：要翻转的原始图像
+# 第二个参数：标志位， 0：表示绕x轴进行上下翻转， >0:表示绕y轴进行左右翻转  <0:表示绕x轴和y轴各进行一次翻转
+image_flip = cv2.flip(image_np, 0)
+
+# 3. 输出，显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_flip', image_flip)
+cv2.waitKey(0)
+```
+
+## 11.图像缩放
+
+```
+# 导入OpenCV的库
+import cv2
+
+# 1.图片输入，读取一张图片
+image_np = cv2.imread('./lena.png')
+
+# 2. 图片缩放
+# dsize和fx、fy不能同时使用，如果同时出现，会以dsize的标准进行缩放
+# 如果想要使用resize函数，就必须填入两个参数：src和dsize
+# 如果不想使用dsize，赋为None就行。
+image_resize = cv2.resize(image_np, dsize=None, fx=0.1, fy=1, interpolation=cv2.INTER_LINEAR)
+
+# 3. 显示图像
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_resize', image_resize)
+cv2.waitKey(0)
+```
+
+## 12.图像矫正
+
+![1773318377852](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773318377852.png)
+
+![1773318390165](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773318390165.png)
+
+```
+# 导入OpenCV库，方便调用函数
+import cv2
+import numpy as np
+
+# 1. 读取图片
+image_np = cv2.imread('./test.png')
+
+# 获取图像的大小
+img_shape = image_np.shape
+
+# 2. 定义原始图像中的四个顶点的坐标
+points1 = np.float32([[200, 100], [700, 150], [140, 400], [650, 460]],)
+# 定义目标图像中 这四个顶点坐标所对应的位置
+points2 = np.float32([[0, 0], [img_shape[1], 0], [0, img_shape[0]], [img_shape[1], img_shape[0]]])
+
+cv2.line(image_np, points1[0].astype(np.int64).tolist(), points1[1].astype(np.int64).tolist(), (0, 0, 255), 1,lineType=cv2.LINE_8)
+cv2.line(image_np, points1[0].astype(np.int64).tolist(), points1[2].astype(np.int64).tolist(), (0, 0, 255), 1,lineType=cv2.LINE_8)
+cv2.line(image_np, points1[3].astype(np.int64).tolist(), points1[1].astype(np.int64).tolist(), (0, 0, 255), 1,lineType=cv2.LINE_8)
+cv2.line(image_np, points1[3].astype(np.int64).tolist(), points1[2].astype(np.int64).tolist(), (0, 0, 255), 1,lineType=cv2.LINE_8)
+
+# 3. 获取透视变换矩阵
+M = cv2.getPerspectiveTransform(points1, points2)
+
+# 4. 进行透视变换
+image_warpPerspective = cv2.warpPerspective(image_np, M, (img_shape[1], img_shape[0]), flags=cv2.INTER_CUBIC)
+
+# 5. 显示图像
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_warpPerspective', image_warpPerspective)
+cv2.waitKey(0)
+```
+
+## 13.图像添加水印
+
+![1773319660567](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773319660567.png)
+
+```
+# 导入OpenCV的库
+import cv2
+ 
+ 
+# 1. 读取原始图像和模板图
+image_np = cv2.imread('./lena.png')
+logo = cv2.imread('./logo.png')
+cv2.imshow('image_np', image_np)
+# 获取logo图的大小
+rows, cols = logo.shape[:2]
+ 
+ 
+# 截取原始图像的ROI区域
+roi = image_np[100:100+rows, 100:100+cols]
+cv2.imshow('roi', roi)
+# 2. 对logo进行灰度化和二值化，制作成一张掩膜
+logo_gray = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
+ 
+ret, mask = cv2.threshold(logo_gray, 127, 255, cv2.THRESH_BINARY_INV)
+ 
+# 3. 进行与运算
+image_and = cv2.bitwise_and(roi, roi, mask=mask)
+ 
+# 4. 图像融合
+dst = cv2.add(image_and, logo)
+ 
+# 5. 将融合后的图像重新赋值到原始图像中
+image_np[100:100+rows, 100:100+cols] = dst
+ 
+ 
+# 6. 显示结果
+cv2.imshow('logo', logo)
+cv2.imshow('mask', mask)
+cv2.imshow('image_and', image_and)
+cv2.imshow('image_np1', image_np)
+cv2.waitKey(0)
+```
+
