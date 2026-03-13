@@ -1028,3 +1028,242 @@ cv2.imshow('image_np1', image_np)
 cv2.waitKey(0)
 ```
 
+## 14.图像噪点消除
+
+![1773368410301](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773368410301.png)
+
+### 14.1 均值滤波
+
+![1773368480674](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773368480674.png)
+
+```
+# 导入OpenCV的库
+import cv2
+
+# 1. 读取要滤波的图像
+image_np = cv2.imread('./lena.png')
+
+# 2. 获取卷积核（滤波器）并进行均值滤波操作
+image_blur = cv2.blur(image_np, (5, 5))
+
+# 3. 显示结果
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_blur', image_blur)
+cv2.waitKey(0)
+```
+
+### 14.2 方框滤波
+
+![1773368534877](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773368534877.png)
+
+![1773368549001](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773368549001.png)
+
+```
+# 导入OpenCV的库
+import cv2
+
+# 1. 读取要滤波的图像
+image_np = cv2.imread('./lena.png')
+
+# 2. 直接进行方框滤波
+image_box = cv2.boxFilter(image_np, -1, (3, 3), normalize=False)
+
+# 图像显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_box', image_box)
+cv2.waitKey(0)
+```
+
+### 14.3 高斯滤波
+
+![1773369564596](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773369564596.png)
+
+![1773369584767](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773369584767.png)
+
+```
+# 导入OpenCV的库
+import cv2
+
+# 1. 读取要滤波的图像
+image_np = cv2.imread('./lena.png')
+
+# 2. 直接进行高斯滤波
+image_Gaussian = cv2.GaussianBlur(image_np, (5, 5), 3)
+
+# 3. 图像显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_Gaussian', image_Gaussian)
+cv2.waitKey(0)
+```
+
+### 14.4 中值滤波
+
+![1773369635257](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773369635257.png)
+
+![1773369647804](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773369647804.png)
+
+![1773369663530](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773369663530.png)
+
+```
+# 导入OpenCV的库
+import cv2
+
+# 1. 读取要滤波的图像
+image_np = cv2.imread('./lena.png')
+
+# 2. 直接使用函数去进行中值滤波
+image_median = cv2.medianBlur(image_np, 3)
+
+# 3. 图像显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_median', image_median)
+cv2.waitKey(0)
+```
+
+### 14.5 双边滤波
+
+![1773369707795](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773369707795.png)
+
+![1773369811519](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773369811519.png)
+
+![1773369821215](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773369821215.png)
+
+```
+# 导入OpenCV的库
+import cv2
+
+# 1. 读取要滤波的图像
+image_np = cv2.imread('./lena.png')
+
+# 2. 直接进行双边滤波
+image_bil = cv2.bilateralFilter(image_np, 5, 150, 150)
+
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_bil', image_bil)
+cv2.waitKey(0)
+```
+
+### 14.6 小结
+
+![1773369852937](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773369852937.png)
+
+## 15. 图像梯度处理
+
+![1773373278908](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773373278908.png)
+
+### 15.1 垂直边缘提取
+
+![1773373361174](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773373361174.png)
+
+​	==这个算子可以自己手动设置。==
+
+```
+# 导入OpenCV库
+import cv2
+import numpy as np
+
+# 1. 图像输入
+image_np = cv2.imread('./shudu.png')
+
+# 构建卷积核
+kernel = np.array([[-1, 0, 1],
+                   [-2, 0, 2],
+                   [-1, 0, 1]])
+
+# 2. 进行梯度处理
+image_filter2D = cv2.filter2D(image_np, -1, kernel)
+
+# 3. 图像显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_filter2D', image_filter2D)
+cv2.waitKey(0)
+```
+
+### 15.2 Sobel算子
+
+![1773373478045](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773373478045.png)
+
+```
+# 导入OpenCV库
+import cv2
+import numpy as np
+
+# 1. 图像输入
+image_np = cv2.imread('./test.png')
+
+image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+
+# 2. 进行卷积运算
+image_Sobel = cv2.Sobel(image_np, -1, 1, 0)
+
+# 3. 图像显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_Sobel', image_Sobel)
+cv2.waitKey(0)
+```
+
+### 15.3 Laplacian算子
+
+![1773373542386](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773373542386.png)
+
+```
+# 导入OpenCV库
+import cv2
+import numpy as np
+
+# 1. 图像输入
+image_np = cv2.imread('./shudu.png')
+
+# 2. 进行卷积
+image_Laplacian = cv2.Laplacian(image_np, -1)
+
+# 3. 图像显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_Laplacian', image_Laplacian)
+cv2.waitKey(0)
+```
+
+## 16.图像边缘检测
+
+![1773388265849](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773388265849.png)
+
+### 16.1 高斯滤波
+
+![1773388298869](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773388298869.png)
+
+### 16.2 计算图像的梯度和方向
+
+![1773388434577](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773388434577.png)
+
+### 16.3 非极大值抑制
+
+![1773388517186](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773388517186.png)
+
+### 16.4 双阈值筛选
+
+![1773388577264](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773388577264.png)
+
+```
+# 导入OpenCV库，方便调用函数
+import cv2
+
+# 1. 读取图像
+image_np = cv2.imread('./picture.png')
+
+# 2. 灰度化图像
+image_np1 = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+
+# 3. 高斯滤波
+image_blur = cv2.GaussianBlur(image_np1, (5, 5), 1.5)
+
+# 4. 进行边缘检测
+image_canny = cv2.Canny(image_blur, 30, 70)
+
+# 5. 结果显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_canny', image_canny)
+cv2.waitKey(0)
+```
+
+## 17.绘制图像轮廓
+
