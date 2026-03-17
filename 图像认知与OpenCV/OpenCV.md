@@ -1147,7 +1147,7 @@ cv2.waitKey(0)
 
 ![1773369852937](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773369852937.png)
 
-## 15. 图像梯度处理
+## 15.图像梯度处理
 
 ![1773373278908](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773373278908.png)
 
@@ -1267,3 +1267,443 @@ cv2.waitKey(0)
 
 ## 17.绘制图像轮廓
 
+### 基本算法实现
+
+![1773710788007](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773710788007.png)
+
+![1773710798242](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773710798242.png)
+
+![1773710813800](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773710813800.png)
+
+![1773710824644](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773710824644.png)
+
+![1773710844354](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773710844354.png)
+
+![1773710853558](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773710853558.png)
+
+![1773710864656](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773710864656.png)
+
+![1773710877019](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773710877019.png)
+
+![1773710889208](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773710889208.png)
+
+![1773710897610](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773710897610.png)
+
+```
+# 导入OpenCV的库
+import cv2
+
+# 1. 读取图片
+image_np = cv2.imread('./picture.png')
+
+# 复制一份原始图像，用来绘制轮廓
+image_contours = image_np.copy()
+
+# 2. 灰度化图像
+image_gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+
+# 3. 二值化图像
+ret, image_binary = cv2.threshold(image_gray, 127, 255, cv2.THRESH_OTSU + cv2.THRESH_BINARY_INV)
+
+# 4. 查找轮廓
+# contours：存储了所有的轮廓点的坐标，比如说contours[0]就存储了第0个轮廓的点的坐标，contours[1]就存储了第1个轮廓的点的坐标
+# hierarchy：存储了对应轮廓的层级关系，hierarchy[0]就存储了第0个轮廓的层级关系。
+contours, hierarchy = cv2.findContours(image_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# 5. 绘制轮廓
+cv2.drawContours(image_contours, contours, 1, (0, 0, 255), thickness=cv2.FILLED)
+
+# 6. 结果显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_contours', image_contours)
+cv2.waitKey(0)
+```
+
+## 18.凸包特征检测
+
+​	凸包就是将一张图片中物体的最外层的点连接起来构成的凸多边形，能包含物体中所有的内容。
+
+### 检测方法：
+
+#### 穷举法：
+
+![1773713698323](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773713698323.png)
+
+![1773713709674](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773713709674.png)
+
+#### Graham扫描法：
+
+![1773713723111](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773713723111.png)
+
+![1773713732161](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773713732161.png)
+
+#### QuickHull法：
+
+![1773713743821](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773713743821.png)
+
+![1773713751265](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773713751265.png)
+
+```
+# 导入OpenCV的库
+import cv2
+
+# 1. 读取图片
+image_np = cv2.imread('./picture.png')
+
+image_poly = image_np.copy()
+
+# 2. 灰度化
+image_gray = cv2.cvtColor(image_poly, cv2.COLOR_BGR2GRAY)
+
+# 3. 二值化
+ret, image_thresh = cv2.threshold(image_gray, 127, 255, cv2.THRESH_BINARY)
+
+# 4. 获取轮廓点的坐标
+contours, hierarchy = cv2.findContours(image_thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# 5. 查找凸包，获取凸包点
+cnt = contours[0]
+hull = cv2.convexHull(cnt)
+# print(type(hull))
+# 6. 绘制凸包
+image_poly = cv2.polylines(image_poly, [hull], True, (0, 0, 255), 2)
+
+# 7. 结果显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_poly', image_poly)
+cv2.waitKey(0)
+```
+
+## 19.图像轮廓特征查找
+
+### 19.1 外接矩形
+
+![1773718870809](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773718870809.png)
+
+```
+# 导入OpenCV库
+import cv2
+
+# 1. 读取图片
+image_np = cv2.imread('./picture.png')
+
+# 复制出一张图片，专门用来绘制轮廓
+image_contour = image_np.copy()
+
+# 2. 灰度化图片
+image_gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+
+# 3. 二值化图像
+ret, image_binary = cv2.threshold(image_gray, 127, 255, cv2.THRESH_OTSU + cv2.THRESH_BINARY_INV)
+
+# 4. 寻找轮廓
+contours, hierarchy = cv2.findContours(image_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# 5. 绘制轮廓
+cv2.drawContours(image_contour, contours, -1, (0, 0, 255), 2)
+
+# 6. 根据轮廓点的坐标寻找外接矩形
+# 通过rectangle去画矩形
+# 我们需要注意的是：boundingRect 这个函数返回的是 外接矩形的左上角的点的坐标及外接矩形的宽度和高度，它并不会为我们绘制矩形
+# 且这个函数一次只能获取一个轮廓的外接矩形
+for cnt in contours:
+    # 通过cv2.boundingRect获取当前轮廓点所构成的外接矩形的左上角的点的坐标及外接矩形的宽度和高度
+    x, y, w, h = cv2.boundingRect(cnt)
+    # 此时的(x，y)就是左上角的点的坐标 w是矩形的宽度 h是矩形的高度
+    top_left = (x, y)
+    # 右下角的点的坐标
+    bottom_right = (x + w, y + h)
+    # 通过rectangle去绘制矩形
+    cv2.rectangle(image_contour, top_left, bottom_right, (255, 0, 0), 2)
+
+# 7. 显示结果
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_contour', image_contour)
+cv2.waitKey(0)
+```
+
+### 19.2 最小外接矩形
+
+![1773718904296](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773718904296.png)
+
+![1773718941782](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773718941782.png)
+
+![1773718985048](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773718985048.png)
+
+![1773719008410](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773719008410.png)
+
+```
+# 导入OpenCV库
+import cv2
+import numpy as np
+
+# 1. 读取图片
+image_np = cv2.imread('./picture.png')
+
+# 复制出一张图片，专门用来绘制轮廓
+image_contour = image_np.copy()
+
+# 2. 灰度化图片
+image_gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+
+# 3. 二值化图像
+ret, image_binary = cv2.threshold(image_gray, 127, 255, cv2.THRESH_OTSU + cv2.THRESH_BINARY_INV)
+
+# 4. 寻找轮廓
+contours, hierarchy = cv2.findContours(image_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# 5. 绘制轮廓
+cv2.drawContours(image_contour, contours, -1, (0, 0, 255), 2)
+
+# 6. 寻找最小外接矩形
+# 注意：cv2.minAreaRect 只能一个一个轮廓的去返回结果
+for cnt in contours:
+    # cv2.minAreaRect 返回的是 角度、矩形中心、矩形的宽和高
+    rect = cv2.minAreaRect(cnt)
+    # 由于rect所包含的信息不能够帮我们直接去绘制旋转矩形
+    # 所以需要使用cv2.boxPoints来帮我们获取旋转矩形的四个顶点坐标
+    box = np.int64(cv2.boxPoints(rect))
+    # 根据四个顶点坐标将最小外接矩形绘制出来
+    # cv2.drawContours 的contours参数必须是contours级别的
+    # 此时的box是cnt级别的
+    cv2.drawContours(image_contour, [box], -1, (255, 0, 0), 2)
+
+# 7. 结果显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_contour', image_contour)
+cv2.waitKey(0)
+```
+
+### 19.3 最小外接圆
+
+![1773719088633](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773719088633.png)
+
+![1773719097543](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773719097543.png)
+
+```
+# 导入OpenCV库
+import cv2
+import numpy as np
+
+# 1. 读取图片
+image_np = cv2.imread('./picture.png')
+
+# 复制出一张图片，专门用来绘制轮廓
+image_contour = image_np.copy()
+
+# 2. 灰度化图片
+image_gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+
+# 3. 二值化图像
+ret, image_binary = cv2.threshold(image_gray, 127, 255, cv2.THRESH_OTSU + cv2.THRESH_BINARY_INV)
+
+# 4. 寻找轮廓
+contours, hierarchy = cv2.findContours(image_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# 5. 绘制轮廓
+cv2.drawContours(image_contour, contours, -1, (0, 0, 255), 2)
+
+# 6. 绘制最小外接圆
+# 6.1 通过cv2.minEnclosingCircle()函数获取最小外接圆的圆心和半径
+# 注意：cv2.minEnclosingCircle()也是只能一个一个去获取最小外接圆
+for cnt in contours:
+    # cv2.minEnclosingCircle()返回的是圆心坐标和半径大小
+    (x, y), radius = cv2.minEnclosingCircle(cnt)
+    # 返回的圆心坐标和半径都不是整数，都需要进行一次取整
+    (x, y, radius) = np.int64((x, y, radius))
+    # 使用cv2.circle()去进行画圆
+    cv2.circle(image_contour, (x, y), radius, (255, 0, 0), 2)
+
+# 7. 显示结果
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_contour', image_contour)
+cv2.waitKey(0)
+```
+
+## 20.直方图均衡化
+
+### 20.1 直方图概念
+
+![1773733065145](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733065145.png)
+
+### 20.2 直方图均衡化
+
+![1773733107311](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733107311.png)
+
+![1773733132113](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733132113.png)
+
+### 20.3 普通直方图均衡化步骤
+
+![1773733167224](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733167224.png)
+
+![1773733184772](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733184772.png)
+
+![1773733203457](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733203457.png)
+
+![1773733230330](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733230330.png)
+
+![1773733246545](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733246545.png)
+
+![1773733255649](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733255649.png)
+
+![1773733354096](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733354096.png)
+
+### 20.4 自适应直方图均衡化步骤
+
+![1773733513089](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733513089.png)
+
+![1773733523554](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773733523554.png)
+
+```
+# 导入库
+import cv2
+import numpy as np
+
+
+# 做一个函数，用来统计和绘制直方图
+def calcAndDrawHist(image_gray):
+    # 需要注意的是：所有的参数都需要转化为列表的形式去传递
+    hist = cv2.calcHist([image_gray], [0], None, [256], [0, 256])
+
+    # 为了下面的归一化操作，需要找到hist里面的最大值
+    minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(hist)
+
+    # 创建一个256*256大小的模板图
+    histImg = np.zeros((256, 256, 3), dtype=np.uint8)
+
+    temp = int(256 * 0.9)
+
+    for h in range(256):
+        # 在循环里，对每一列数据做一次归一化处理，防止其超出模板图的范围
+        intensity = int(temp * hist[h,0] / maxVal)
+        cv2.line(histImg, (h, 256), (h, 256 - intensity), (255, 0, 0))
+
+    return histImg
+
+
+# 1. 读取图像
+image_np = cv2.imread('./picture.png')
+
+# 2. 灰度化
+image_gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+
+# 3. 绘制直方图
+hist_image = calcAndDrawHist(image_gray)
+
+# 4. 直方图均衡化
+# 4.1 标准的直方图均衡化的函数
+# image_equalizeHist = cv2.equalizeHist(image_gray)
+# image_equalizeHist_image = calcAndDrawHist(image_equalizeHist)
+
+# 4.2 对比度受限制的自适应直方图均衡化的使用
+clahe = cv2.createCLAHE(2, (8, 8))
+image_clahe = clahe.apply(image_gray)
+image_clahe1 = calcAndDrawHist(image_clahe)
+
+cv2.imshow('image_np', image_np)
+cv2.imshow('hist_image', hist_image)
+cv2.imshow('image_equalizeHist', image_clahe)
+cv2.imshow('image_equalizeHist_image', image_clahe1)
+# cv2.imshow('image_equalizeHist', image_equalizeHist)
+# cv2.imshow('image_equalizeHist_image', image_equalizeHist_image)
+cv2.waitKey(0)
+```
+
+## 21.模板匹配
+
+### 21.1 模板匹配概念
+
+![1773738297896](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773738297896.png)
+
+### 21.2 匹配方法
+
+#### 21.2.1 平方差匹配
+
+![1773738481160](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773738481160.png)
+
+#### 21.2.2 归一化平方差匹配
+
+![1773738495863](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773738495863.png)
+
+#### 21.2.3 相关匹配
+
+![1773738505159](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773738505159.png)
+
+#### 21.2.4 归一化相关匹配
+
+![1773738515122](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773738515122.png)
+
+#### 21.2.5 相关系数匹配
+
+![1773738525838](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773738525838.png)
+
+#### 21.2.6 归一化相关系数匹配
+
+![1773738535057](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773738535057.png)
+
+```
+# 导入Opencv库
+import cv2
+import numpy as np
+
+# 1. 读取图片
+image_np = cv2.imread('./picture.png')
+template = cv2.imread('./muban.png')
+
+# 2. 对读取到的模板图及原图像进行灰度化
+image_np_gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+
+# 获取模板图的宽和高，方便后面进行绘图
+h, w = template_gray.shape[:2]
+
+# 3. 进行模板匹配的操作
+res = cv2.matchTemplate(image_np_gray, template_gray, cv2.TM_CCOEFF_NORMED)
+print(res)
+
+# 4. 对返回的结果做进一步处理
+threshold = 0.57
+
+# 对某数组的数据进行判断，如果满足条件，就返回其对应的坐标
+# 这里要注意的是，他返回的是行和列的坐标。
+# 对应到Opencv里，就是某一个点的y和x的坐标
+location = np.where(res > threshold)
+
+# print(location)
+# print(location[::-1])
+# for i in zip(*location[::-1]):
+#     print(i)
+
+# 5. 对得到的点的坐标进行翻转处理，并再原图中框出来
+for left_top in zip(*location[::-1]):
+    right_bottom = (left_top[0] + w, left_top[1] + h)
+    cv2.rectangle(image_np, left_top, right_bottom, (0, 0, 255))
+
+# # 6. 显示模板匹配的结果
+cv2.imshow('image_np', image_np)
+cv2.waitKey(0)
+```
+
+## 23.图像亮度变换
+
+![1773738706750](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773738706750.png)
+
+```
+# 先导入opencv库
+import cv2
+import numpy as np
+ 
+# 1. 读取图片
+image_np = cv2.imread('flower.png')
+ 
+ 
+# 2. 直接对numpy数组做数值运算
+# 为了保证图像的数据处于0-255之内，且数据类型还得是整形
+# clip函数： 是一个截断函数，你需要给它提供要截取的范围，提供截取的对象
+image_brightness = np.uint8(np.clip(image_np * 1.0 + 50, 0, 255))
+ 
+# 3. 显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_brightness', image_brightness)
+cv2.waitKey(0)
+```
