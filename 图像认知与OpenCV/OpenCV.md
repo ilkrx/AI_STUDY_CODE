@@ -1684,6 +1684,123 @@ cv2.imshow('image_np', image_np)
 cv2.waitKey(0)
 ```
 
+## 22.霍夫变换
+
+### 22.1 霍夫直线变换
+
+![1773824978919](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773824978919.png)
+
+![1773824991729](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773824991729.png)
+
+![1773825007377](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773825007377.png)
+
+### 22.2 霍夫线检测
+
+```
+# 导入OpenCV库
+import cv2
+import numpy as np
+
+# 1. 读取图像
+image_np = cv2.imread('./picture.png')
+image_shape = image_np.shape
+
+# 2. 灰度化
+image_gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+
+# 3. Canny边缘检测  得到边缘点
+image_canny = cv2.Canny(image_gray, 30, 70)
+
+# 4. 标准的霍夫直线检测
+lines = cv2.HoughLines(image_canny, 0.8, np.pi / 180, 120)
+
+# 创建一个模板图，方便绘制检测结果
+image_HoughLines = np.zeros(image_shape, dtype=np.uint8)
+
+for line in lines:
+    rho, theta = line[0]
+    cos_theta = np.cos(theta)
+    sin_theta = np.sin(theta)
+    # rho = x * cos_theta + y * sin_theta
+    # y = (rho - x * cos_theta) / sin_theta
+    x1, x2 = 0, image_shape[1]
+    y1 = int((rho - x1 * cos_theta) / sin_theta)
+    y2 = int((rho - x2 * cos_theta) / sin_theta)
+    cv2.line(image_HoughLines, (x1, y1), (x2, y2), (0, 0, 255))
+
+# 结果显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_HoughLines', image_HoughLines)
+cv2.waitKey(0)
+```
+
+### 22.3 统计概率霍夫线检测
+
+```
+# 导入OpenCV库
+import cv2
+import numpy as np
+
+# 1. 读取图像
+image_np = cv2.imread('./picture.png')
+image_shape = image_np.shape
+
+# 2. 灰度化
+image_gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+
+# 3. Canny边缘检测  得到边缘点
+image_canny = cv2.Canny(image_gray, 30, 70)
+# 创建一个模板图，方便绘制检测结果
+image_HoughLinesP = np.zeros(image_shape, dtype=np.uint8)
+
+# 4. 统计概率霍夫直线检测
+lines = cv2.HoughLinesP(image_canny, 0.8, np.pi / 180, 90, minLineLength=50, maxLineGap=10)
+
+for line in lines:
+    x1, y1, x2, y2 = line[0]
+    cv2.line(image_HoughLinesP, (x1, y1), (x2, y2), (0, 0, 255))
+
+# 结果显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_HoughLines', image_HoughLinesP)
+cv2.waitKey(0)
+```
+
+### 22.4 霍夫圆检测
+
+```
+# 导入OpenCV库
+import cv2
+import numpy as np
+
+# 1. 读取图像
+image_np = cv2.imread('./picture.png')
+image_shape = image_np.shape
+
+# 2. 灰度化
+image_gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+
+# # 3. Canny边缘检测  得到边缘点
+# image_canny = cv2.Canny(image_gray, 30, 70)
+
+# 4. 霍夫圆检测
+# circles = cv2.HoughCircles(image_gray, cv2.HOUGH_GRADIENT, 1, 20, param1=70, param2=50)
+circles = cv2.HoughCircles(image_gray, cv2.HOUGH_GRADIENT_ALT, 1.5, 20, param1=300, param2=0.9)
+circles = np.int64(np.around(circles))
+
+# 创建一个模板图，方便绘制检测结果
+image_Circle = np.zeros(image_shape, dtype=np.uint8)
+
+for circle in circles:
+    x, y, radius = circle[0]
+    cv2.circle(image_Circle, (x, y), radius, (0, 0, 255), 2)
+
+# 结果显示
+cv2.imshow('image_np', image_np)
+cv2.imshow('image_Circle', image_Circle)
+cv2.waitKey(0)
+```
+
 ## 23.图像亮度变换
 
 ![1773738706750](C:\Users\Angel\AppData\Roaming\Typora\typora-user-images\1773738706750.png)
