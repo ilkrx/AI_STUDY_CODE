@@ -69,14 +69,22 @@ def dilate_erode(image_thresh,kernel):
 
 
 if __name__ == '__main__':
-    # 读取图像
-    image = cv2.imread('7.png')
-    # 透视变换
-    image_wrapper = wrapper_image(image)
-    # 车道线提取
-    image_sobel = extract_lines(image_wrapper)
-    # 显示图像
-    cv2.imshow('image_wrapper',image_wrapper)
-    cv2.imshow('image_sobel',image_sobel)
+    for i in range(1, 8):
+        # 读取图像
+        image = cv2.imread(f'{i}.png')
 
+        # 透视变换
+        image_wrapper = wrapper_image(image)
+
+        # 车道线提取
+        image_sobel = extract_lines(image_wrapper)
+
+        # 显示图像
+        cv2.imshow(f'image_wrapper_{i}', image_wrapper)
+        cv2.imshow(f'image_sobel_{i}', image_sobel)
+
+        # 保存图像
+        cv2.imwrite(f"final_{i}.png", image_sobel)
+
+    # 等待按键后关闭所有窗口
     cv2.waitKey(0)
