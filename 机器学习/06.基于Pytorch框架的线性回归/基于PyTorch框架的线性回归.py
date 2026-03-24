@@ -33,7 +33,7 @@ seed = 10
 torch.manual_seed(seed)
 
 # 2.定义前向模型
-model = nn.Linear(1,1)      # 输入特征是1，输出特征是1    ------>    表示只有一个输入特征x，只有一个输出特征y
+# model = nn.Linear(1,1)      # 输入特征是1，输出特征是1    ------>    表示只有一个输入特征x，只有一个输出特征y
 
 # 1)nn.Sequential是pytorch的一个模块容器，按顺序组合多个网络层
 # nn.Sequential默认带forward方法
@@ -74,17 +74,17 @@ model = nn.Linear(1,1)      # 输入特征是1，输出特征是1    ------>    
 """
 实际上最常用的
 """
-# class LinearModel(nn.Module):
-#     def __init__(self):
-#         super(LinearModel, self).__init__()
-#         self.linear = nn.Linear(1, 1)
-#         self.linear2 = nn.Linear(2, 1)
-#
-#     def forward(self, x):
-#         x = self.linear(x)
-#         return x
-#
-# model = LinearModel()
+class LinearModel(nn.Module):
+    def __init__(self):
+        super(LinearModel, self).__init__()
+        self.linear = nn.Linear(1, 1)
+        self.linear2 = nn.Linear(2, 1)
+
+    def forward(self, x):
+        x = self.linear(x)
+        return x
+
+model = LinearModel()
 
 
 # 3.定义损失函数和优化器
@@ -95,10 +95,10 @@ optimizer = torch.optim.SGD(model.parameters(),lr=0.01)
 # 4.开始迭代
 epochs = 500
 for epoch in range(1,epochs + 1):
-    y_hat = model(x_train.unsqueeze(1))
+    y_hat = model(x_train.unsqueeze(1)) # （10，1）  (batch_size, in_features)
 
     # 计算损失
-    loss = criterion(y_hat.squeeze(1),y_train)
+    loss = criterion(y_hat.squeeze(1),y_train)  # (1,)
 
     # 作用：清空之前存储在优化器中的梯度
     optimizer.zero_grad()
