@@ -52,7 +52,7 @@ print(x_train_tensor.shape)
 # # 2.模型定义
 class linear_regression(nn.Module):
     def __init__(self,input_size):
-        super(linear_regression,self).__init__()
+        super().__init__()
         self.linear = nn.Linear(input_size,1)
 
     def forward(self,x):
@@ -87,7 +87,6 @@ for epoch in range(0,epochs):
     # 设置提示信息，每隔一段时间得到w和损失值
     if (epoch + 1) % 100 ==0:
         print(f"epoch:{epoch + 1},loss:{loss.item():.4f}")
-
 
 # 5.评估模型
 model.eval()
