@@ -57,7 +57,6 @@ class SimpleNet(nn.Module):
     print(model)
 """
 
-
 # 定义一个继承自 nn.Module 的神经网络基类
 class LinearModel(nn.Module):
     def __init__(self):
