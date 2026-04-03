@@ -76,7 +76,9 @@ for epoch in range(0,epochs):
     # 删除优化器中的梯度记录
     optimizer.zero_grad()
     # 前向模型
-    y_predict = model(x_train_tensor)
+    y_predict = model(x_train_tensor)  #(bs,特征数)
+    print("-----------------------------")
+    print(x_train_tensor)
     # 计算损失值
     loss = criterion(y_predict,y_train_tensor)
     # 反向模型

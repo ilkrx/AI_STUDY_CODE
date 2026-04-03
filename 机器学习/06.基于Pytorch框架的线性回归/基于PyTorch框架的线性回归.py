@@ -78,7 +78,7 @@ class LinearModel(nn.Module):
     def __init__(self):
         super(LinearModel, self).__init__()
         self.linear = nn.Linear(1, 1)
-        self.linear2 = nn.Linear(2, 1)
+        # self.linear2 = nn.Linear(2, 1)
 
     def forward(self, x):
         x = self.linear(x)
