@@ -16,6 +16,12 @@ print("input_seq:", input_seq)
 # print("output_seq:", output_seq)
 
 # 4.数据编码：one-hot
+# [0 1 0 0 0 0 0 0 0
+#  1 0 0 0 0 0 0 0 0
+#  0 0 0 1 0 0 0 0 0
+#  0 0 0 0 0 0 1 0 0
+#  0 0 0 0 0 0 0 0 1]
+# 字符去重并排序
 chars = set(text)
 chars = sorted(chars)
 # print("chars:", chars)
